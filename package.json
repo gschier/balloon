@@ -14,13 +14,15 @@
   "dependencies": {
     "chokidar": "^0.9.0",
     "commander": "^2.3.0",
+    "date-utils": "^1.2.16",
     "extend": "^2.0.0",
     "finalhandler": "^0.3.0",
     "fs-sync": "^0.2.5",
-    "highlight.js": "^8.3.0",
     "html-minifier": "^0.6.8",
     "marked": "^0.3.2",
+    "pygmentize-bundled": "^2.2.0",
     "serve-static": "^1.6.4",
+    "slug": "^0.8.0",
     "swig": "^1.4.2"
   }
 }
