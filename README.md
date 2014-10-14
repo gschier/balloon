@@ -29,7 +29,7 @@ balloon --watch --source . --destination build
 # Get help
 balloon --help
 
-  Usage: balloon [options] <build_path>
+  Usage: balloon [options]
 
   Options:
 
