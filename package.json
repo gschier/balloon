@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "balloon": "./bin/balloon"
+    "balloon": "./bin/balloon",
+    "balloon-server": "./bin/serve"
   },
   "author": "Gregory Schier",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "fs-sync": "^0.2.5",
     "html-minifier": "^0.6.8",
     "marked": "^0.3.2",
+    "ncp": "^1.0.1",
     "pygmentize-bundled": "^2.2.0",
     "serve-static": "^1.6.4",
     "slug": "^0.8.0",
