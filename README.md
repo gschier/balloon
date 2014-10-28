@@ -1,13 +1,7 @@
 Balloon Static Site Generator
 =============================
 
-Very simple static site generator. It works for my needs, but it's pretty simple.
-
-
-Usage
------
-
-This is what's up:
+Very simple static site generator. Built for deploying to S3. It works for my needs, but it's pretty simple.
 
 
 ### Installation
