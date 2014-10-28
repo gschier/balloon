@@ -20,9 +20,11 @@
     "finalhandler": "^0.3.0",
     "fs-sync": "^0.2.5",
     "html-minifier": "^0.6.8",
+    "knox": "^0.9.1",
     "marked": "^0.3.2",
     "ncp": "^1.0.1",
     "pygmentize-bundled": "^2.2.0",
+    "s3": "^4.3.1",
     "serve-static": "^1.6.4",
     "slug": "^0.8.0",
     "swig": "^1.4.2"
