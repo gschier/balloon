@@ -1,17 +1,14 @@
 {
   "name": "balloon",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": { },
   "bin": {
     "balloon": "./bin/balloon",
     "balloon-server": "./bin/serve"
   },
   "author": "Gregory Schier",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "chokidar": "^0.9.0",
     "commander": "^2.3.0",
