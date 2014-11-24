@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-
-var balloon = require('../lib/app.js');
+var balloon = require('../balloon.js');
 
 balloon.run();
