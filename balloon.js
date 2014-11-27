@@ -52,7 +52,7 @@ function renderPages (config) {
     var pages = config.pages;
 
     for (var i = 0; i < pages.length; i++) {
-        render(defaults, pages[i], function (err, content) {
+        render(config, pages[i], function (err, content) {
             // console.log('RENDERED PAGE', content);
         });
     }
