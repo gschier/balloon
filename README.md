@@ -22,15 +22,19 @@ balloon --watch --source . --destination build
 
 # Get help
 balloon --help
-
-  Usage: balloon [options]
+  Usage: balloon [options] <BUILD_PATH>
 
   Options:
 
     -h, --help               output usage information
     -V, --version            output the version number
-    -d, --destination [dir]  build directory
-    -s, --source [dir]       source directory
-    -w, --watch              watch and serve
+    -s, --build [DIRECTORY]  source directory
+    -d, --deploy <DOMAIN>    deploy to S3
+    -s, --serve              watch and serve files
 ```
 
+### Deploying
+
+```bash
+balloon deploy
+```

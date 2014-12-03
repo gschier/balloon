@@ -6,6 +6,7 @@ var program = require('commander');
 var chokidar = require('chokidar');
 var rimraf = require('rimraf');
 var slug = require('slug');
+var sortBy = require('sort-by');
 
 var pkg = require('./package.json');
 
@@ -13,30 +14,34 @@ var watch = require('./lib/watch.js');
 var render = require('./lib/render.js');
 var serve = require('./lib/serve.js');
 var static = require('./lib/static.js');
+var deploy = require('./lib/deploy.js');
 
-// Augment Date
-require('date-utils');
 
 /** MAIN ENTRYPOINT **/
 module.exports.run = function () {
     program
         .version(pkg.version)
         .usage('[options] <BUILD_PATH>')
-        .option('-s, --source <DIRECTORY>', 'source directory')
-        .option('-w, --watch', 'watch and serve')
+        .option('-s, --build [DIRECTORY]', 'source directory')
+        .option('-d, --deploy <DOMAIN>', 'deploy to S3')
+        .option('-s, --serve', 'watch and serve files')
         .parse(process.argv);
 
     var CONFIG_PATH = 'balloon.json';
     var BALLOON_CONFIG = getConfig(CONFIG_PATH);
 
-    var SOURCE_PATH = BALLOON_CONFIG.source;
-    var BUILD_PATH = BALLOON_CONFIG.build;
+    var SOURCE_PATH = program.source || BALLOON_CONFIG.source;
+    var BUILD_PATH = program.args[0] || BALLOON_CONFIG.build;
 
     var CONTENT_PATH = path.join(SOURCE_PATH, 'content');
 
-    if (program.watch && BUILD_PATH) {
+    if (program.deploy) {
+        deploy(BUILD_PATH, program.deploy);
+    } else if (program.serve && BUILD_PATH) {
+
         watch(SOURCE_PATH, BUILD_PATH, function (err, changedPath) {
             if (err) { return console.log('Failed to watch files:', err); }
+
             rimraf(BUILD_PATH, function (err) {
                 if (err) { return console.log('Failed wipe build directory:', err); }
 
@@ -54,7 +59,14 @@ module.exports.run = function () {
     }
 
     else if (BUILD_PATH) {
-        build(SOURCE_PATH, BUILD_PATH);
+        var pagePaths = getPagePaths(path.join(SOURCE_PATH, CONTENT_PATH), '.');
+
+        renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
+            static(SOURCE_PATH, BUILD_PATH, function (err) {
+                if (err) { return console.log('Failed to copy static files:', err); }
+                // Done
+            });
+        });
     }
 
     else {
@@ -66,29 +78,88 @@ module.exports.run = function () {
  * For each page, render
  */
 function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
-    var numFinished = 0;
+    var pageCount = 0;
+    var allPageConfigs = [ ];
+    var lastPages = [ ];
 
     for (var i = 0; i < pagePaths.length; i++) {
         var pageFile = pagePaths[i];
         var pageExt = path.extname(pageFile);
         var pageTitle = path.basename(pageFile, pageExt);
         var pageSlug = slug(pageTitle.replace('–', '-')).toLowerCase();
-        var pagePath = path.join(path.dirname(pageFile), pageSlug) + '.html';
+        var pagePath = '/' + path.join(path.dirname(pageFile), pageSlug) + '.html';
 
         var pageConfig = {
             _path: pagePath,
-            _file: pageFile
+            _file: pageFile,
+            page: {
+                slug: pageSlug,
+                created: extractDateFromPath(pagePath)
+            }
         };
 
-        render(defaults, sourcePath, buildPath, pageConfig, function (err, content) {
+        if (pageTitle !== 'index') {
+            pageConfig.page.title = pageTitle;
+        }
+
+        if (pagePath.indexOf('index.html') >= 0) {
+            lastPages.push(pageConfig);
+            continue;
+        } else {
+            pageCount++;
+        }
+
+        render(defaults, sourcePath, buildPath, pageConfig, null, function (err, localPageConfig) {
             if (err) { return console.log('Failed to render', pageConfig._path, err); }
 
+            allPageConfigs.push(localPageConfig);
+
             // TODO: Use better way of detecting done
-            if (++numFinished === pagePaths.length) {
-                callback(null);
+            // TODO: This is such a mess
+            if (--pageCount === 0) {
+                numFinished = 0;
+
+                for (var j = 0; j < lastPages.length; j++) {
+
+                    allPageConfigs.sort(sortBy('page.created.timestamp'));
+
+                    render(defaults, sourcePath, buildPath, lastPages[j], allPageConfigs, function (err, pageConfig) {
+                        if (err) { return console.log('Failed to render', pageConfig._path, err); }
+                        if (++numFinished === lastPages.length) {
+                            callback(null);
+                        }
+                    });
+                }
+                if (lastPages.length === 0) {
+                    callback(null);
+                }
             }
         });
     }
+}
+
+function extractDateFromPath (path) {
+    var match = path.match(/\/([0-9]{2,4})\/([0-9]{1,2})\/([0-9]{1,2})\/?/);
+
+    if (match) {
+
+        var year = parseInt(match[1], 10);
+        var month = parseInt(match[2], 10);
+        var day = parseInt(match[3], 10);
+
+        var d = new Date(year, month - 1, day);
+
+        var created = {
+            timestamp: d.getTime(),
+            year: year,
+            month: month,
+            day: day
+        };
+
+        return created;
+    }
+
+    return null;
 }
 
 /**
@@ -112,6 +183,7 @@ function getPagePaths (basePath, childPath) {
             filesInThisDir = filesInThisDir.concat(morePaths);
         }
     });
+
     return filesInThisDir;
 }
 
