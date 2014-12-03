@@ -19,6 +19,8 @@ Overview of Balloon
 - built-in webserver that auto-restarts on changed files
 - S3 deploy functionality
 
+![Balloon Static Website Generator](http://schier.co/images/balloon.png)
+
 
 Installation
 ------------
