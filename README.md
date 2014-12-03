@@ -65,7 +65,7 @@ MyBalloonProject/
 A few notes on what you see above:
 
 - URL slugs are automatically generated from file names
-- file paths will be equal to the URL path.
+- file paths will be equal to the URL path
     - Example `mysite.com/blog/2014/12/04/my-first-post.html`
 
 
@@ -78,7 +78,7 @@ default ones that should be useful. All Balloon-generated variables start with u
 - `_title` name of the file, without the extension
 - `_slug` full URL path of the current page
 - `_created` an extracted date if the URL path contains the pattern `/YYYY/MM/DD/`
-    - `_created` is an object containing the properties `timestamp`, `year`, `month`, `day`
+    - this is an object containing the properties `timestamp`, `year`, `month`, `day`
 - `_pages` a list of all the pages that were rendered, along with the context for each one
     - only files named `index.html` and `rss.xml` have access to `_pages`
     - Example: useful for a `/blog/index.html` page to list all blog posts
