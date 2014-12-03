@@ -24,7 +24,7 @@ Installation
 ------------
 
 ```bash
-npm install -g balloon
+npm install -g balloon-generator
 ```
 
 
