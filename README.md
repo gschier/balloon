@@ -32,7 +32,7 @@ Usage
 -----
 
 ```bash
-# build from source to destination
+# generate static based on settings in balloon.json (see below)
 balloon
 balloon --output ./another/destination/  # override build directory
 
