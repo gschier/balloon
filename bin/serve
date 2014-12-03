@@ -14,4 +14,4 @@ server = http.createServer(function (req, res) {
 
 server.listen(port);
 
-console.log('Listening on port ' + port);
+console.log('visit http://localhost:' + port + '/');

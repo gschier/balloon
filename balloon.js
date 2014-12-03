@@ -23,8 +23,8 @@ module.exports.run = function () {
         .version(pkg.version)
         .usage('[options]')
         .option('-s, --serve [port]', 'watch and serve files')
-        .option('-o, --output <path>', 'override output path')
-        .option('-d, --deploy <domain>', 'deploy to S3')
+        .option('-b, --build <path>', 'override build path')
+        .option('-d, --deploy [domain]', 'deploy to S3')
         .parse(process.argv);
 
     var CONFIG_PATH = 'balloon.json';
@@ -36,7 +36,7 @@ module.exports.run = function () {
     var CONTENT_PATH = path.join(SOURCE_PATH, 'content');
 
     if (program.deploy) {
-        var domain = program.deploy || BALLOON_CONFIG.domain;
+        var domain = typeof(program.deploy) === 'string' ? program.deploy : BALLOON_CONFIG.domain;
         deploy(BUILD_PATH, domain);
     } else if (program.serve && BUILD_PATH) {
 
@@ -63,6 +63,8 @@ module.exports.run = function () {
     else if (BUILD_PATH) {
         var pagePaths = getPagePaths(path.join(SOURCE_PATH, CONTENT_PATH), '.');
 
+        var msg = SOURCE_PATH + ' --> ' + BUILD_PATH;
+        console.log('\x1b[45m * \x1b[0m\033[1m build:\033[0m ' + msg);
         renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
             static(SOURCE_PATH, BUILD_PATH, function (err) {
                 if (err) { return console.log('Failed to copy static files:', err); }

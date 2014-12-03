@@ -49,8 +49,8 @@ balloon --help
     -h, --help             output usage information
     -V, --version          output the version number
     -s, --serve [port]     watch and serve files
-    -o, --output <path>    override output path
-    -d, --deploy <domain>  deploy to S3
+    -b, --build <path>     override build path
+    -d, --deploy [domain]  deploy to S3
 ```
 
 
