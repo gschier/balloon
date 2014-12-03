@@ -1,7 +1,10 @@
 Balloon Static Site Generator
 =============================
 
-Very simple static site generator. Built for deploying to S3. It works for my needs, but it's pretty simple.
+Very simple static site generator. Built for deploying to S3. It works for my needs, but it's
+pretty simple.
+
+View the [source code](https://github.com/gschier/schier.co) of [my website](http://schier.co).
 
 
 Overview of Balloon
