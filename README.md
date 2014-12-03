@@ -22,6 +22,33 @@ Installation
 npm install -g balloon
 ```
 
+
+Usage
+-----
+
+```bash
+# build from source to destination
+balloon
+balloon --output ./another/destination/  # override build directory
+
+# Same as above, except it watches for changes and serves the build directory
+balloon --serve
+balloon --serve 3000  # with port
+
+# Get help
+balloon --help
+  Usage: balloon [options]
+
+  Options:
+
+    -h, --help             output usage information
+    -V, --version          output the version number
+    -s, --serve [port]     watch and serve files
+    -o, --output <path>    override output path
+    -d, --deploy <domain>  deploy to S3
+```
+
+
 Folder Structure
 ----------------
 
@@ -69,21 +96,6 @@ A few notes on what you see above:
     - Example `mysite.com/blog/2014/12/04/my-first-post.html`
 
 
-Template Context
-----------------
-
-Balloon lets you define context variables in `balloon.json` (see below), but it also provides some
-default ones that should be useful. All Balloon-generated variables start with underscores.
-
-- `_title` name of the file, without the extension
-- `_slug` full URL path of the current page
-- `_created` an extracted date if the URL path contains the pattern `/YYYY/MM/DD/`
-    - this is an object containing the properties `timestamp`, `year`, `month`, `day`
-- `_pages` a list of all the pages that were rendered, along with the context for each one
-    - only files named `index.html` and `rss.xml` have access to `_pages`
-    - Example: useful for a `/blog/index.html` page to list all blog posts
-
-
 Configuration
 -------------
 
@@ -129,30 +141,19 @@ of a config:
 ```
 
 
-Usage
------
+Template Context
+----------------
 
-```bash
-# build from source to destination
-balloon
-balloon --output ./another/destination/  # override build directory
+Balloon lets you define context variables in `balloon.json` (see below), but it also provides some
+default ones that should be useful. All Balloon-generated variables start with underscores.
 
-# Same as above, except it watches for changes and serves the build directory
-balloon --serve
-balloon --serve 3000  # with port
-
-# Get help
-balloon --help
-  Usage: balloon [options]
-
-  Options:
-
-    -h, --help             output usage information
-    -V, --version          output the version number
-    -s, --serve [port]     watch and serve files
-    -o, --output <path>    override output path
-    -d, --deploy <domain>  deploy to S3
-```
+- `_title` name of the file, without the extension
+- `_slug` full URL path of the current page
+- `_created` an extracted date if the URL path contains the pattern `/YYYY/MM/DD/`
+    - this is an object containing the properties `timestamp`, `year`, `month`, `day`
+- `_pages` a list of all the pages that were rendered, along with the context for each one
+    - only files named `index.html` and `rss.xml` have access to `_pages`
+    - Example: useful for a `/blog/index.html` page to list all blog posts
 
 
 Deploying to S3
