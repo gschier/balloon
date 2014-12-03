@@ -65,7 +65,8 @@ MyBalloonProject/
 A few notes on what you see above:
 
 - URL slugs are automatically generated from file names
-- file paths will be equal to the URL path. Example: `mysite.com/blog/2014/12/04/my-first-post.html`
+- file paths will be equal to the URL path.
+    - Example `mysite.com/blog/2014/12/04/my-first-post.html`
 
 
 Template Context
