@@ -4,8 +4,8 @@ Balloon Static Site Generator
 Very simple static site generator. Built for deploying to S3. It works for my needs, but it's pretty simple.
 
 
-Fun Facts
----------
+Overview of Balloon
+-------------------
 
 - uses [Swig](http://paularmstrong.github.io/swig/) template language
 - auto convert [Markdown](http://www.wikiwand.com/en/Markdown) to HTML if file ends in `.md`
@@ -15,13 +15,15 @@ Fun Facts
 - S3 deploy functionality
 
 
-### Installation
+Installation
+------------
 
 ```bash
 npm install -g balloon
 ```
 
-### Folder Structure
+Folder Structure
+----------------
 
 Here's what a base project looks like:
 
@@ -66,7 +68,8 @@ A few notes on what you see above:
 - file paths will be equal to the URL path. Example: `mysite.com/blog/2014/12/04/my-first-post.html`
 
 
-### Template Context
+Template Context
+----------------
 
 Balloon lets you define context variables in `balloon.json` (see below), but it also provides some
 default ones that should be useful. All Balloon-generated variables start with underscores.
@@ -80,7 +83,8 @@ default ones that should be useful. All Balloon-generated variables start with u
     - Example: useful for a `/blog/index.html` page to list all blog posts
 
 
-### Configuration
+Configuration
+-------------
 
 Balloon looks for a `balloon.json` file in the directory that it is run from. Here is an example
 of a config:
@@ -124,7 +128,8 @@ of a config:
 ```
 
 
-### Usage
+Usage
+-----
 
 ```bash
 # build from source to destination
@@ -149,7 +154,8 @@ balloon --help
 ```
 
 
-### Deploying to S3
+Deploying to S3
+---------------
 
 Balloon has built-in support for deploying to Amazon S3. Simply run the command below and specify
 the domain (bucket) you want.
@@ -159,7 +165,8 @@ balloon deploy mydomain.com
 ```
 
 
-### Other Notes
+Other Notes
+-----------
 
 Right now I'm the only person I know of using Balloon in production. You can check out
 [my site](http://schier.co) (also view [the source](https://github.com/gschier/schier.co)). I'm
