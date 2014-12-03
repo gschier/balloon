@@ -21,22 +21,23 @@ var deploy = require('./lib/deploy.js');
 module.exports.run = function () {
     program
         .version(pkg.version)
-        .usage('[options] <BUILD_PATH>')
-        .option('-s, --build [DIRECTORY]', 'source directory')
-        .option('-d, --deploy <DOMAIN>', 'deploy to S3')
-        .option('-s, --serve', 'watch and serve files')
+        .usage('[options]')
+        .option('-s, --serve [port]', 'watch and serve files')
+        .option('-o, --output <path>', 'override output path')
+        .option('-d, --deploy <domain>', 'deploy to S3')
         .parse(process.argv);
 
     var CONFIG_PATH = 'balloon.json';
     var BALLOON_CONFIG = getConfig(CONFIG_PATH);
 
     var SOURCE_PATH = program.source || BALLOON_CONFIG.source;
-    var BUILD_PATH = program.args[0] || BALLOON_CONFIG.build;
+    var BUILD_PATH = program.output || BALLOON_CONFIG.build;
 
     var CONTENT_PATH = path.join(SOURCE_PATH, 'content');
 
     if (program.deploy) {
-        deploy(BUILD_PATH, program.deploy);
+        var domain = program.deploy || BALLOON_CONFIG.domain;
+        deploy(BUILD_PATH, domain);
     } else if (program.serve && BUILD_PATH) {
 
         watch(SOURCE_PATH, BUILD_PATH, function (err, changedPath) {
@@ -48,7 +49,8 @@ module.exports.run = function () {
                 var pagePaths = getPagePaths(path.join(SOURCE_PATH, CONTENT_PATH), '.');
 
                 renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
-                    serve(BUILD_PATH);
+                    var port = parseInt(program.serve, 10);
+                    serve(BUILD_PATH, port);
                     static(SOURCE_PATH, BUILD_PATH, function (err) {
                         if (err) { return console.log('Failed to copy static files:', err); }
                         // Done
@@ -82,27 +84,27 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
     var allPageConfigs = [ ];
     var lastPages = [ ];
 
+    var extensionMap = {
+        '.md': '.html'
+    };
+
     for (var i = 0; i < pagePaths.length; i++) {
         var pageFile = pagePaths[i];
         var pageExt = path.extname(pageFile);
         var pageTitle = path.basename(pageFile, pageExt);
         var pageSlug = slug(pageTitle.replace('–', '-')).toLowerCase();
-        var pagePath = '/' + path.join(path.dirname(pageFile), pageSlug) + '.html';
+        var pagePath = '/' + path.join(path.dirname(pageFile), pageSlug) + (extensionMap[pageExt] || pageExt);
 
         var pageConfig = {
             _path: pagePath,
             _file: pageFile,
-            page: {
-                slug: pageSlug,
-                created: extractDateFromPath(pagePath)
-            }
+            _ext: pageExt,
+            _title: pageTitle === 'index' ? '' : pageTitle,
+            _slug: pageSlug,
+            _created: extractDateFromPath(pagePath)
         };
 
-        if (pageTitle !== 'index') {
-            pageConfig.page.title = pageTitle;
-        }
-
-        if (pagePath.indexOf('index.html') >= 0) {
+        if (pagePath.indexOf('index.html') >= 0 || pagePath.indexOf('rss.xml') >= 0) {
             lastPages.push(pageConfig);
             continue;
         } else {
@@ -119,9 +121,9 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
             if (--pageCount === 0) {
                 numFinished = 0;
 
-                for (var j = 0; j < lastPages.length; j++) {
+                allPageConfigs.sort(sortBy('_created.timestamp'));
 
-                    allPageConfigs.sort(sortBy('page.created.timestamp'));
+                for (var j = 0; j < lastPages.length; j++) {
 
                     render(defaults, sourcePath, buildPath, lastPages[j], allPageConfigs, function (err, pageConfig) {
                         if (err) { return console.log('Failed to render', pageConfig._path, err); }
