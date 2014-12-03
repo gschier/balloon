@@ -1,7 +1,7 @@
 Balloon — Static Website Generator
 ==================================
 
-Because balloons generate static...
+*Because balloons generate static...*
 
 Balloon is a very simple static site generator. Built for deploying to S3. It works for my needs,
 but it's pretty simple.
