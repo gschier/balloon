@@ -39,9 +39,15 @@ module.exports.run = function () {
         var domain = typeof(program.deploy) === 'string' ? program.deploy : BALLOON_CONFIG.domain;
         deploy(BUILD_PATH, domain);
     } else if (program.serve && BUILD_PATH) {
-
         watch(SOURCE_PATH, BUILD_PATH, function (err, changedPath) {
             if (err) { return console.log('Failed to watch files:', err); }
+
+            // Reload the things
+            // TODO: Move this somewhere else
+            BALLOON_CONFIG = getConfig(CONFIG_PATH);
+            SOURCE_PATH = program.source || BALLOON_CONFIG.source;
+            BUILD_PATH = program.output || BALLOON_CONFIG.build;
+            CONTENT_PATH = path.join(SOURCE_PATH, 'content');
 
             rimraf(BUILD_PATH, function (err) {
                 if (err) { return console.log('Failed wipe build directory:', err); }
@@ -101,17 +107,20 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
             _path: pagePath,
             _file: pageFile,
             _ext: pageExt,
-            _title: pageTitle === 'index' ? '' : pageTitle,
             _slug: pageSlug,
             _created: extractDateFromPath(pagePath)
         };
 
         if (pagePath.indexOf('index.html') >= 0 || pagePath.indexOf('rss.xml') >= 0) {
+            // This is an archive page
             lastPages.push(pageConfig);
             continue;
         } else {
+            // This is a content page
             pageCount++;
+            pageConfig._title = pageTitle;
         }
+
 
         render(defaults, sourcePath, buildPath, pageConfig, null, function (err, localPageConfig) {
             if (err) { return console.log('Failed to render', pageConfig._path, err); }
