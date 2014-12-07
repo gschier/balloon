@@ -1,43 +1,44 @@
 {
-    "name": "balloon-generator",
-    "version": "0.9.5",
-    "description": "Basic static site generator",
-    "keywords": [
-        "static",
-        "blog",
-        "website",
-        "server",
-        "cli"
-    ],
-    "license": "MIT",
-    "author": "Gregory Schier <greg@schier.co>",
-    "bin": {
-        "balloon": "./bin/balloon",
-        "balloon-server": "./bin/serve"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/gschier/balloon"
-    },
-    "bugs": {
-        "url": "https://github.com/gschier/balloon/issues"
-    },
-    "scripts": {},
-    "dependencies": {
-        "chokidar": "^0.9.0",
-        "commander": "^2.3.0",
-        "extend": "^2.0.0",
-        "finalhandler": "^0.3.2",
-        "fs-sync": "^0.2.5",
-        "marked": "^0.3.2",
-        "mkdirp": "^0.5.0",
-        "ncp": "^1.0.1",
-        "pygmentize-bundled": "^2.2.0",
-        "rimraf": "^2.2.8",
-        "s3": "^4.3.1",
-        "serve-static": "^1.6.4",
-        "slug": "^0.8.0",
-        "sort-by": "^1.1.0",
-        "swig": "^1.4.2"
-    }
+  "name": "balloon-generator",
+  "version": "0.10.0",
+  "description": "Basic static site generator",
+  "keywords": [
+    "static",
+    "blog",
+    "website",
+    "server",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Gregory Schier <greg@schier.co>",
+  "bin": {
+    "balloon": "./bin/balloon",
+    "balloon-server": "./bin/serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gschier/balloon"
+  },
+  "bugs": {
+    "url": "https://github.com/gschier/balloon/issues"
+  },
+  "scripts": {},
+  "dependencies": {
+    "chokidar": "^0.9.0",
+    "commander": "^2.3.0",
+    "extend": "^2.0.0",
+    "finalhandler": "^0.3.2",
+    "fs-sync": "^0.2.5",
+    "html-minifier": "^0.6.9",
+    "marked": "^0.3.2",
+    "mkdirp": "^0.5.0",
+    "ncp": "^1.0.1",
+    "pygmentize-bundled": "^2.2.0",
+    "rimraf": "^2.2.8",
+    "s3": "^4.3.1",
+    "serve-static": "^1.6.4",
+    "slug": "^0.8.0",
+    "sort-by": "^1.1.0",
+    "swig": "^1.4.2"
+  }
 }
