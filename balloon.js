@@ -16,6 +16,9 @@ var serve = require('./lib/serve.js');
 var static = require('./lib/static.js');
 var deploy = require('./lib/deploy.js');
 
+var ARCHIVE_PAGES_REGEX = /(index.html|rss.xml)$/;
+var BALLOON_CONFIG_PATH = 'balloon.json';
+
 
 /** MAIN ENTRYPOINT **/
 module.exports.run = function () {
@@ -27,8 +30,7 @@ module.exports.run = function () {
         .option('-d, --deploy [domain]', 'deploy to S3')
         .parse(process.argv);
 
-    var CONFIG_PATH = 'balloon.json';
-    var BALLOON_CONFIG = getConfig(CONFIG_PATH);
+    var BALLOON_CONFIG = getConfig(BALLOON_CONFIG_PATH);
 
     var SOURCE_PATH = program.source || BALLOON_CONFIG.source;
     var BUILD_PATH = program.output || BALLOON_CONFIG.build;
@@ -39,20 +41,39 @@ module.exports.run = function () {
         var domain = typeof(program.deploy) === 'string' ? program.deploy : BALLOON_CONFIG.domain;
         deploy(BUILD_PATH, domain);
     } else if (program.serve && BUILD_PATH) {
-        watch(SOURCE_PATH, BUILD_PATH, function (err, changedPath) {
-            if (err) { return console.log('Failed to watch files:', err); }
+        rimraf(BUILD_PATH, function (err) {
+            if (err) { return console.log('Failed wipe build directory:', err); }
 
-            // Reload the things
-            // TODO: Move this somewhere else
-            BALLOON_CONFIG = getConfig(CONFIG_PATH);
-            SOURCE_PATH = program.source || BALLOON_CONFIG.source;
-            BUILD_PATH = program.output || BALLOON_CONFIG.build;
-            CONTENT_PATH = path.join(SOURCE_PATH, 'content');
+            watch(SOURCE_PATH, BUILD_PATH, function (err, changedPath) {
+                if (err) { return console.log('Failed to watch files:', err); }
 
-            rimraf(BUILD_PATH, function (err) {
-                if (err) { return console.log('Failed wipe build directory:', err); }
+                // Reload the things
+                // TODO: Move this somewhere else
+                BALLOON_CONFIG = getConfig(BALLOON_CONFIG_PATH);
+                SOURCE_PATH = program.source || BALLOON_CONFIG.source;
+                BUILD_PATH = program.output || BALLOON_CONFIG.build;
+                CONTENT_PATH = path.join(SOURCE_PATH, 'content');
 
-                var pagePaths = getPagePaths(path.join(SOURCE_PATH, CONTENT_PATH), '.');
+                var pagePaths;
+
+                // Only static was changed. Don't render again
+                if (changedPath && changedPath.match(/^static\/.*/)) {
+                    pagePaths = null;
+                }
+
+                // Single content file was changed that isn't an archive file (ex: index.html)
+                else if (
+                    changedPath &&
+                    changedPath.match(CONTENT_PATH) &&
+                    !changedPath.match(ARCHIVE_PAGES_REGEX)
+                ) {
+                    pagePaths = [ path.relative(CONTENT_PATH, changedPath) ];
+                }
+
+                // No specific file changed. Compile all again.
+                else {
+                    pagePaths = getPagePaths(path.join(SOURCE_PATH, CONTENT_PATH), '.');
+                }
 
                 renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
                     var port = parseInt(program.serve, 10);
@@ -71,10 +92,15 @@ module.exports.run = function () {
 
         var msg = SOURCE_PATH + ' --> ' + BUILD_PATH;
         console.log('\x1b[45m * \x1b[0m\033[1m build:\033[0m ' + msg);
-        renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
-            static(SOURCE_PATH, BUILD_PATH, function (err) {
-                if (err) { return console.log('Failed to copy static files:', err); }
-                // Done
+
+        rimraf(BUILD_PATH, function (err) {
+            if (err) { return console.log('Failed wipe build directory:', err); }
+
+            renderPages(BALLOON_CONFIG.defaults, CONTENT_PATH, BUILD_PATH, pagePaths, function (err) {
+                static(SOURCE_PATH, BUILD_PATH, function (err) {
+                    if (err) { return console.log('Failed to copy static files:', err); }
+                    // Done
+                });
             });
         });
     }
@@ -92,9 +118,9 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
     var allPageConfigs = [ ];
     var lastPages = [ ];
 
-    var extensionMap = {
-        '.md': '.html'
-    };
+    var extensionMap = { '.md': '.html' };
+
+    if (!pagePaths || pagePaths.length === 0) { return callback(null); }
 
     for (var i = 0; i < pagePaths.length; i++) {
         var pageFile = pagePaths[i];
@@ -111,8 +137,7 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
             _created: extractDateFromPath(pagePath)
         };
 
-        if (pagePath.indexOf('index.html') >= 0 || pagePath.indexOf('rss.xml') >= 0) {
-            // This is an archive page
+        if (pagePath.match(ARCHIVE_PAGES_REGEX)) {
             lastPages.push(pageConfig);
             continue;
         } else {
