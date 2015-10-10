@@ -19,7 +19,6 @@ var deploy = require('./lib/deploy.js');
 var ARCHIVE_PAGES_REGEX = /(index.html|rss.xml)$/;
 var BALLOON_CONFIG_PATH = 'balloon.json';
 
-
 /** MAIN ENTRYPOINT **/
 module.exports.run = function () {
     program
@@ -145,8 +144,6 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
             pageCount++;
             pageConfig._title = pageTitle;
         }
-
-
         render(defaults, sourcePath, buildPath, pageConfig, null, function (err, localPageConfig) {
             if (err) { return console.log('Failed to render', pageConfig._path, err); }
 
