@@ -52,7 +52,6 @@ balloon --help
     -V, --version          output the version number
     -s, --serve [port]     watch and serve files
     -b, --build <path>     override build path
-    -d, --deploy [domain]  deploy to S3
 ```
 
 
@@ -161,17 +160,6 @@ default ones that should be useful. All Balloon-generated variables start with u
 - `_pages` a list of all the pages that were rendered, along with the context for each one
     - only files named `index.html` and `rss.xml` have access to `_pages`
     - Example: useful for a `/blog/index.html` page to list all blog posts
-
-
-Deploying to S3
----------------
-
-Balloon has built-in support for deploying to Amazon S3. Simply run the command below and specify
-the domain (bucket) you want.
-
-```bash
-balloon deploy mydomain.com
-```
 
 
 Other Notes
