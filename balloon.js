@@ -3,7 +3,6 @@ var path = require('path');
 var extend = require('extend');
 
 var program = require('commander');
-var chokidar = require('chokidar');
 var rimraf = require('rimraf');
 var slug = require('slug');
 var sortBy = require('sort-by');
@@ -144,6 +143,7 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
             pageCount++;
             pageConfig._title = pageTitle;
         }
+
         render(defaults, sourcePath, buildPath, pageConfig, null, function (err, localPageConfig) {
             if (err) { return console.log('Failed to render', pageConfig._path, err); }
 

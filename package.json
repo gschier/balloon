@@ -1,6 +1,6 @@
 {
   "name": "balloon-generator",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "description": "Basic static site generator",
   "keywords": [
     "static",
@@ -24,7 +24,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "chokidar": "^1.2.0",
+    "chokidar": "^1.4.2",
     "commander": "^2.8.1",
     "extend": "^3.0.0",
     "finalhandler": "^0.4.0",
