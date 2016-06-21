@@ -145,7 +145,7 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
         }
 
         render(defaults, sourcePath, buildPath, pageConfig, null, function (err, localPageConfig) {
-            if (err) { return console.log('Failed to render', pageConfig._path, err); }
+            if (err) { return console.log('Failed to render', pageConfig._path, err.message); }
 
             allPageConfigs.push(localPageConfig);
 
@@ -159,7 +159,7 @@ function renderPages (defaults, sourcePath, buildPath, pagePaths, callback) {
                 for (var j = 0; j < lastPages.length; j++) {
 
                     render(defaults, sourcePath, buildPath, lastPages[j], allPageConfigs, function (err, pageConfig) {
-                        if (err) { return console.log('Failed to render', pageConfig._path, err); }
+                        if (err) { return console.log('Failed to render', pageConfig._path, err.message); }
                         if (++numFinished === lastPages.length) {
                             callback(null);
                         }
